@@ -1,0 +1,83 @@
+﻿<UserControl x:Class="MiracleShoesDesktop.View.OrdersView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:MiracleShoesDesktop.View"
+             mc:Ignorable="d" 
+             d:DesignHeight="600" d:DesignWidth="900">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="2*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="Список заказов" FontSize="24" FontWeight="Bold" Margin="0,0,0,15"/>
+
+        <DataGrid Grid.Row="1" ItemsSource="{Binding Orders}"
+              SelectedItem="{Binding SelectedOrder}"
+              AutoGenerateColumns="False" IsReadOnly="True"
+              CanUserAddRows="False" Background="Transparent"
+              HeadersVisibility="Column" GridLinesVisibility="Horizontal">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="№" Binding="{Binding IdOrder}" Width="60"/>
+                <DataGridTextColumn Header="Дата" Binding="{Binding DateOrder}" Width="100"/>
+                <DataGridTextColumn Header="Клиент" Binding="{Binding IdUserNavigation.FullName}" Width="220"/>
+                <DataGridTextColumn Header="Позиций" Binding="{Binding OrderItems.Count}" Width="80"/>
+                <DataGridTextColumn Header="Итого" Binding="{Binding TotalCostComputed, StringFormat='{}{0:N2} ₽'}" Width="120" FontWeight="Bold"/>
+                <DataGridTemplateColumn Header="Действия" Width="170">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <Button Content="Ред." Height="25" Margin="0,0,5,0" Padding="8,0"
+                                    Command="{Binding DataContext.EditOrderCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                    CommandParameter="{Binding}"
+                                    Visibility="{Binding DataContext.CanEdit, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource BoolToVis}}"/>
+                                <Button Content="Удалить" Height="25" Padding="8,0"
+                                    Background="#FF8080" Foreground="White"
+                                    Command="{Binding DataContext.DeleteOrderCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                    CommandParameter="{Binding}"
+                                    Visibility="{Binding DataContext.CanDelete, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource BoolToVis}}"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <TextBlock Grid.Row="2" Text="Состав заказа" FontSize="18" FontWeight="Bold" Margin="0,15,0,5"/>
+
+        <DataGrid Grid.Row="3" ItemsSource="{Binding SelectedItems}"
+              AutoGenerateColumns="False" IsReadOnly="True"
+              CanUserAddRows="False" Background="Transparent"
+              HeadersVisibility="Column" GridLinesVisibility="Horizontal">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Товар" Binding="{Binding IdProductNavigation.NameProduct}" Width="*"/>
+                <DataGridTextColumn Header="Размер" Binding="{Binding IdSizeNavigation.ShoeSize}" Width="80"/>
+                <DataGridTextColumn Header="Кол-во" Binding="{Binding Amount}" Width="80"/>
+                <DataGridTextColumn Header="Цена за ед." Binding="{Binding CostForItem, StringFormat='{}{0:N2} ₽'}" Width="120"/>
+                <DataGridTextColumn Header="Итого" Binding="{Binding Cost, StringFormat='{}{0:N2} ₽'}" Width="120" FontWeight="Bold"/>
+                <DataGridTemplateColumn Header="Действия" Width="220">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <Button Content="+" Width="30" Height="25"
+                                    Command="{Binding DataContext.IncreaseItemCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                    CommandParameter="{Binding}"/>
+                                <Button Content="−" Width="30" Height="25" Margin="5,0"
+                                    Command="{Binding DataContext.DecreaseItemCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                    CommandParameter="{Binding}"/>
+                                <Button Content="Удалить" Height="25" Padding="8,0"
+                                    Background="#FF8080" Foreground="White"
+                                    Command="{Binding DataContext.RemoveItemCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                    CommandParameter="{Binding}"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</UserControl>

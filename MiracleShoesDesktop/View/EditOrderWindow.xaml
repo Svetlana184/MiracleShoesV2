@@ -1,0 +1,53 @@
+﻿<Window x:Class="MiracleShoesDesktop.View.EditOrderWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MiracleShoesDesktop.View"
+        mc:Ignorable="d"
+        Title="Редактирование заказа" Height="480" Width="820"
+        WindowStartupLocation="CenterOwner"
+        Background="{StaticResource MainBackground}">
+    <Grid Margin="15">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
+            <TextBlock Text="Дата:" VerticalAlignment="Center" Margin="0,0,5,0"/>
+            <DatePicker SelectedDate="{Binding OrderDate, UpdateSourceTrigger=PropertyChanged}" Width="140"/>
+            <TextBlock Text="Клиент:" VerticalAlignment="Center" Margin="20,0,5,0"/>
+            <ComboBox x:Name="ClientCombo" DisplayMemberPath="FullName" Width="220" Height="25"/>
+        </StackPanel>
+
+        <DataGrid Grid.Row="1" ItemsSource="{Binding Items}"
+                  AutoGenerateColumns="False" CanUserAddRows="False"
+                  Background="Transparent" HeadersVisibility="Column" Height="300">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Товар" Binding="{Binding IdProductNavigation.NameProduct}" Width="*" IsReadOnly="True"/>
+                <DataGridTextColumn Header="Размер" Binding="{Binding IdSizeNavigation.ShoeSize}" Width="80" IsReadOnly="True"/>
+                <DataGridTextColumn Header="Кол-во" Binding="{Binding Amount, UpdateSourceTrigger=PropertyChanged}" Width="80"/>
+                <DataGridTextColumn Header="Цена за ед." Binding="{Binding CostForItem, StringFormat='{}{0:N2}', UpdateSourceTrigger=PropertyChanged}" Width="120"/>
+                <DataGridTemplateColumn Header="" Width="80">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button Content="Удалить" Height="22" Background="#FF8080" Foreground="White"
+                                    Click="RemoveItem_Click"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
+            <Button Content="Сохранить" Width="120" Height="32" Margin="0,0,10,0"
+                    Background="{StaticResource AccentColor}" Foreground="White" FontWeight="Bold"
+                    Click="Save_Click"/>
+            <Button Content="Отмена" Width="100" Height="32"
+                    Background="#DDDDDD" Click="Cancel_Click"/>
+        </StackPanel>
+    </Grid>
+</Window>
