@@ -40,7 +40,7 @@ namespace MiracleShoesDesktop.View
             DataContext = this;
         }
 
-        private SizeOption? CurrentSize => SizeCombo.SelectedItem as SizeOption;
+        public SizeOption? CurrentSize => SizeCombo.SelectedItem as SizeOption;
 
         private void SizeCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {

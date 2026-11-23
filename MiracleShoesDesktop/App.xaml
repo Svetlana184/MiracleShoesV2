@@ -23,6 +23,6 @@
 
         <services:BoolToVisibilityConverter x:Key="BoolToVis"/>
         <services:LowStockToColorConverter x:Key="LowStockConverter"/>
-        <services:ProductImageConverter x:Key="ProductImageConverter"/>
+        <services:ProductImageConverter x:Key="ProductImageConverter"/>  
     </Application.Resources>
 </Application>
