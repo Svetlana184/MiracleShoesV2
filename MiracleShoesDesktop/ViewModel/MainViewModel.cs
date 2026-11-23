@@ -18,6 +18,8 @@ namespace MiracleShoesDesktop.ViewModel
 
         public bool ShowOrdersBool => Session.IsAuthorized;
 
+        [ObservableProperty] private string authorizeButton = Session.IsAuthorized ? "Выйти" : "Войти";
+
         public MainViewModel(Window window)
         {
             _window = window;

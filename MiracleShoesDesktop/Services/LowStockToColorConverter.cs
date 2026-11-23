@@ -22,7 +22,7 @@ namespace MiracleShoesDesktop.Services
         {
             if (value is int amount && amount <= LowStockThreshold)
                 return LowStockBrush;
-            return Brushes.Transparent;
+            return Brushes.Black;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

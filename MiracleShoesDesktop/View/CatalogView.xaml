@@ -27,12 +27,12 @@
 
         <ListBox Grid.Row="1" ItemsSource="{Binding Products}"
                  Background="Transparent" BorderThickness="0"
-                 ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                 ScrollViewer.HorizontalScrollBarVisibility="Disabled" Width="600">
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <Border BorderBrush="{StaticResource AccentColor}" BorderThickness="1"
+                    <Border BorderThickness="5" BorderBrush="{Binding Amount, Converter={StaticResource LowStockConverter}}" 
                             CornerRadius="8" Padding="15" Margin="0,5"
-                            Background="{Binding Amount, Converter={StaticResource LowStockConverter}}">
+                            Background="{StaticResource MainBackground}">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="100"/>

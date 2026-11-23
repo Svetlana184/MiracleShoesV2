@@ -13,7 +13,7 @@ namespace MiracleShoesDesktop
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
-            new LoginWindow().Show();
+            new MainWindow().Show();
         }
     }
 
