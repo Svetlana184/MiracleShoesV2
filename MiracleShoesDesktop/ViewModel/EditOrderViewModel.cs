@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.EntityFrameworkCore;
 using MiracleShoesDesktop.Model;
+using MiracleShoesDesktop.Services;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -13,13 +14,12 @@ namespace MiracleShoesDesktop.ViewModel
     public partial class EditOrderViewModel : ObservableObject
     {
         private readonly PostgresContext _context = new();
+        private readonly int _orderId;
 
         [ObservableProperty] private DateTime? _orderDate;
         [ObservableProperty] private User? _selectedClient;
         [ObservableProperty] private ObservableCollection<User> _clients = new();
         [ObservableProperty] private ObservableCollection<OrderItem> _items = new();
-
-        private readonly int _orderId;
 
         public event Action<bool>? RequestClose;
 
@@ -44,16 +44,10 @@ namespace MiracleShoesDesktop.ViewModel
         {
             if (item == null) return;
 
-            if (item.IdSize.HasValue)
-            {
-                var avail = _context.AvailableSizes
-                    .FirstOrDefault(a => a.IdProduct == item.IdProduct && a.IdSize == item.IdSize);
-                if (avail != null)
-                {
-                    avail.Amount += item.Amount;
-                    avail.IsAvailable = true;
-                }
-            }
+            _context.AvailableSizes
+                .FirstOrDefault(a => a.IdProduct == item.IdProduct && a.IdSize == item.IdSize)
+                ?.Add(item.Amount);
+
             Items.Remove(item);
         }
 
@@ -91,11 +85,11 @@ namespace MiracleShoesDesktop.ViewModel
                     var diff = uiItem.Amount - dbItem.Amount;
                     var avail = _context.AvailableSizes
                         .FirstOrDefault(a => a.IdProduct == dbItem.IdProduct && a.IdSize == dbItem.IdSize);
+
                     if (avail != null)
                     {
-                        avail.Amount -= diff;
-                        if (avail.Amount < 0) avail.Amount = 0;
-                        avail.IsAvailable = avail.Amount > 0;
+                        if (diff > 0) avail.Take(diff);
+                        else avail.Add(-diff);
                     }
                 }
 

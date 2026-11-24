@@ -63,6 +63,11 @@ namespace MiracleShoesDesktop.ViewModel
             Session.IsManager || Session.IsAdmin ||
             _context.Orders.Any(o => o.IdOrder == orderId && o.IdUser == Session.CurrentUser!.IdUser);
 
+        private static AvailableSize? GetAvailable(PostgresContext ctx, int productId, int? sizeId)
+            => sizeId.HasValue
+                ? ctx.AvailableSizes.FirstOrDefault(a => a.IdProduct == productId && a.IdSize == sizeId)
+                : null;
+
         [RelayCommand(CanExecute = nameof(CanDelete))]
         private void DeleteOrder(Order? order)
         {
@@ -74,21 +79,8 @@ namespace MiracleShoesDesktop.ViewModel
 
             using var ctx = new PostgresContext();
 
-            // вернуть остатки на склад
-            var items = ctx.OrderItems.Where(i => i.IdOrder == order.IdOrder).ToList();
-            foreach (var i in items)
-            {
-                if (i.IdSize.HasValue)
-                {
-                    var avail = ctx.AvailableSizes
-                        .FirstOrDefault(a => a.IdProduct == i.IdProduct && a.IdSize == i.IdSize);
-                    if (avail != null)
-                    {
-                        avail.Amount += i.Amount;
-                        avail.IsAvailable = true;
-                    }
-                }
-            }
+            foreach (var i in ctx.OrderItems.Where(i => i.IdOrder == order.IdOrder).ToList())
+                GetAvailable(ctx, i.IdProduct, i.IdSize)?.Add(i.Amount);
 
             var entity = ctx.Orders.FirstOrDefault(o => o.IdOrder == order.IdOrder);
             if (entity != null)
@@ -104,9 +96,7 @@ namespace MiracleShoesDesktop.ViewModel
         private void EditOrder(Order? order)
         {
             if (order == null) return;
-
-            var win = new EditOrderWindow(order);
-            if (win.ShowDialog() == true)
+            if (new EditOrderWindow(order).ShowDialog() == true)
                 LoadOrders();
         }
 
@@ -119,22 +109,12 @@ namespace MiracleShoesDesktop.ViewModel
             var entity = ctx.OrderItems.FirstOrDefault(i => i.IdOrderItem == item.IdOrderItem);
             if (entity == null) return;
 
-            if (entity.IdSize.HasValue)
-            {
-                var avail = ctx.AvailableSizes
-                    .FirstOrDefault(a => a.IdProduct == entity.IdProduct && a.IdSize == entity.IdSize);
-                if (avail != null)
-                {
-                    avail.Amount += entity.Amount;
-                    avail.IsAvailable = true;
-                }
-            }
+            GetAvailable(ctx, entity.IdProduct, entity.IdSize)?.Add(entity.Amount);
 
             var orderId = entity.IdOrder;
             ctx.OrderItems.Remove(entity);
 
-            var left = ctx.OrderItems.Count(i => i.IdOrder == orderId) - 1;
-            if (left == 0)
+            if (ctx.OrderItems.Count(i => i.IdOrder == orderId) - 1 == 0)
             {
                 var order = ctx.Orders.FirstOrDefault(o => o.IdOrder == orderId);
                 if (order != null) ctx.Orders.Remove(order);
@@ -153,11 +133,7 @@ namespace MiracleShoesDesktop.ViewModel
             var entity = ctx.OrderItems.FirstOrDefault(i => i.IdOrderItem == item.IdOrderItem);
             if (entity == null) return;
 
-            var avail = entity.IdSize.HasValue
-                ? ctx.AvailableSizes.FirstOrDefault(a =>
-                    a.IdProduct == entity.IdProduct && a.IdSize == entity.IdSize)
-                : null;
-
+            var avail = GetAvailable(ctx, entity.IdProduct, entity.IdSize);
             if (avail == null || avail.Amount <= 0)
             {
                 MessageBox.Show("Нет в наличии.", "Заказ",
@@ -166,8 +142,7 @@ namespace MiracleShoesDesktop.ViewModel
             }
 
             entity.Amount += 1;
-            avail.Amount -= 1;
-            if (avail.Amount <= 0) avail.IsAvailable = false;
+            avail.Take(1);
 
             ctx.SaveChanges();
             LoadOrders();
@@ -189,17 +164,7 @@ namespace MiracleShoesDesktop.ViewModel
             if (entity == null) return;
 
             entity.Amount -= 1;
-
-            if (entity.IdSize.HasValue)
-            {
-                var avail = ctx.AvailableSizes
-                    .FirstOrDefault(a => a.IdProduct == entity.IdProduct && a.IdSize == entity.IdSize);
-                if (avail != null)
-                {
-                    avail.Amount += 1;
-                    avail.IsAvailable = true;
-                }
-            }
+            GetAvailable(ctx, entity.IdProduct, entity.IdSize)?.Add(1);
 
             ctx.SaveChanges();
             LoadOrders();

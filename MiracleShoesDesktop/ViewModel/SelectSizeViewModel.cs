@@ -21,7 +21,7 @@ namespace MiracleShoesDesktop.ViewModel
 
         public event Action<bool>? RequestClose;
 
-        public SelectSizeViewModel(string productName, System.Collections.Generic.List<SizeOption> sizes)
+        public SelectSizeViewModel(string productName, List<SizeOption> sizes)
         {
             ProductName = productName;
             Sizes = new ObservableCollection<SizeOption>(sizes);
@@ -30,24 +30,15 @@ namespace MiracleShoesDesktop.ViewModel
 
         partial void OnSelectedSizeChanged(SizeOption? value)
         {
-            UpdateAvailable();
-            ClampAmount();
+            AvailableText = value != null ? $"Доступно: {value.Amount}" : string.Empty;
+            Amount = value != null ? Math.Clamp(Amount, 1, value.Amount) : 1;
         }
 
-        partial void OnAmountChanged(int value) => ClampAmount(silent: true);
-
-        private void UpdateAvailable()
+        partial void OnAmountChanged(int value)
         {
-            AvailableText = SelectedSize != null
-                ? $"Доступно: {SelectedSize.Amount}"
-                : string.Empty;
-        }
-
-        private void ClampAmount(bool silent = false)
-        {
-            if (SelectedSize == null) return;
-            if (Amount < 1) { Amount = 1; return; }
-            if (Amount > SelectedSize.Amount) Amount = SelectedSize.Amount;
+            if (value < 1) { Amount = 1; return; }
+            if (SelectedSize != null && value > SelectedSize.Amount)
+                Amount = SelectedSize.Amount;
         }
 
         [RelayCommand] private void Minus() { if (Amount > 1) Amount--; }

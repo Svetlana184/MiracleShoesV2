@@ -29,25 +29,24 @@ namespace MiracleShoesDesktop.ViewModel
         public CatalogViewModel()
         {
             _context = new PostgresContext();
-            SelectedSort = SortOptions[0];   
+            SelectedSort = SortOptions[0];
         }
 
         partial void OnSearchTextChanged(string value) => LoadProducts();
-
         partial void OnSelectedSortChanged(string value) => LoadProducts();
 
         private void LoadProducts()
         {
             var query = _context.Products.AsNoTracking().AsQueryable();
 
-            if (CanUseFilters && !string.IsNullOrWhiteSpace(SearchText))
-            {
-                var s = SearchText.ToLower();
-                query = query.Where(p => p.NameProduct.ToLower().Contains(s));
-            }
-
             if (CanUseFilters)
             {
+                if (!string.IsNullOrWhiteSpace(SearchText))
+                {
+                    var s = SearchText.ToLower();
+                    query = query.Where(p => p.NameProduct.ToLower().Contains(s));
+                }
+
                 query = SelectedSort switch
                 {
                     "Цена (возр.)" => query.OrderBy(p => p.Cost),
@@ -153,8 +152,7 @@ namespace MiracleShoesDesktop.ViewModel
                 });
             }
 
-            avail.Amount -= qty;
-            if (avail.Amount <= 0) avail.IsAvailable = false;
+            avail.Take(qty);
 
             _context.SaveChanges();
             LoadProducts();
