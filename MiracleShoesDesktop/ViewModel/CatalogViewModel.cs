@@ -29,11 +29,13 @@ namespace MiracleShoesDesktop.ViewModel
         public CatalogViewModel()
         {
             _context = new PostgresContext();
-            SelectedSort = SortOptions[0];
-            LoadProducts();
+            SelectedSort = SortOptions[0];   
         }
 
-        [RelayCommand]
+        partial void OnSearchTextChanged(string value) => LoadProducts();
+
+        partial void OnSelectedSortChanged(string value) => LoadProducts();
+
         private void LoadProducts()
         {
             var query = _context.Products.AsNoTracking().AsQueryable();

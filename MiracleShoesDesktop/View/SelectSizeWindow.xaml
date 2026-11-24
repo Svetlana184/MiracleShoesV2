@@ -13,26 +13,27 @@
                    TextWrapping="Wrap" Margin="0,0,0,10"/>
 
         <TextBlock Text="Размер:" FontWeight="Bold" Margin="0,0,0,5"/>
-        <ComboBox x:Name="SizeCombo" Height="28" DisplayMemberPath="ShoeSize"
-                  SelectionChanged="SizeCombo_SelectionChanged"/>
+        <ComboBox ItemsSource="{Binding Sizes}"
+                  SelectedItem="{Binding SelectedSize}"
+                  DisplayMemberPath="ShoeSize" Height="28"/>
 
         <TextBlock Text="Количество:" FontWeight="Bold" Margin="0,15,0,5"/>
         <StackPanel Orientation="Horizontal">
-            <Button Content="−" Width="35" Height="30" Click="Minus_Click"/>
-            <TextBox x:Name="AmountBox" Width="80" Height="30" Margin="5,0"
-                     TextAlignment="Center" Text="1"
+            <Button Content="−" Width="35" Height="30" Command="{Binding MinusCommand}"/>
+            <TextBox Width="80" Height="30" Margin="5,0" TextAlignment="Center"
+                     Text="{Binding Amount, UpdateSourceTrigger=PropertyChanged}"
                      PreviewTextInput="AmountBox_PreviewTextInput"/>
-            <Button Content="+" Width="35" Height="30" Click="Plus_Click"/>
-            <TextBlock x:Name="AvailableText" VerticalAlignment="Center"
+            <Button Content="+" Width="35" Height="30" Command="{Binding PlusCommand}"/>
+            <TextBlock Text="{Binding AvailableText}" VerticalAlignment="Center"
                        Margin="15,0,0,0" Foreground="Gray"/>
         </StackPanel>
 
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,25,0,0">
             <Button Content="Добавить" Width="120" Height="32" Margin="0,0,10,0"
                     Background="{StaticResource AccentColor}" Foreground="White" FontWeight="Bold"
-                    Click="Ok_Click"/>
+                    Command="{Binding OkCommand}"/>
             <Button Content="Отмена" Width="100" Height="32"
-                    Background="#DDDDDD" Click="Cancel_Click"/>
+                    Background="#DDDDDD" Command="{Binding CancelCommand}"/>
         </StackPanel>
     </StackPanel>
 </Window>

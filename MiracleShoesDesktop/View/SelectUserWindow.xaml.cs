@@ -1,4 +1,5 @@
 ﻿using MiracleShoesDesktop.Model;
+using MiracleShoesDesktop.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -13,9 +14,6 @@ using System.Windows.Shapes;
 
 namespace MiracleShoesDesktop.View
 {
-    /// <summary>
-    /// Логика взаимодействия для SelectUserWindow.xaml
-    /// </summary>
     public partial class SelectUserWindow : Window
     {
         public int? SelectedUserId { get; private set; }
@@ -23,22 +21,14 @@ namespace MiracleShoesDesktop.View
         public SelectUserWindow()
         {
             InitializeComponent();
-            using var ctx = new PostgresContext();
-            UserCombo.ItemsSource = ctx.Users.OrderBy(u => u.Surname).ToList();
-        }
 
-        private void Ok_Click(object sender, RoutedEventArgs e)
-        {
-            if (UserCombo.SelectedItem is User u)
+            var vm = new SelectUserViewModel();
+            vm.RequestClose += ok =>
             {
-                SelectedUserId = u.IdUser;
-                DialogResult = true;
-            }
-            else
-            {
-                MessageBox.Show("Выберите клиента.", "Ошибка",
-                    MessageBoxButton.OK, MessageBoxImage.Warning);
-            }
+                SelectedUserId = vm.SelectedUserId;
+                DialogResult = ok;
+            };
+            DataContext = vm;
         }
     }
 }

@@ -20,14 +20,11 @@
             <ComboBox Width="160" Height="35" Margin="0,0,10,0"
                       ItemsSource="{Binding SortOptions}"
                       SelectedItem="{Binding SelectedSort}"/>
-            <Button Content="Применить" Width="120" Height="35"
-                    Background="{StaticResource AccentColor}" Foreground="White"
-                    Command="{Binding LoadProductsCommand}"/>
         </StackPanel>
 
         <ListBox Grid.Row="1" ItemsSource="{Binding Products}"
                  Background="Transparent" BorderThickness="0"
-                 ScrollViewer.HorizontalScrollBarVisibility="Disabled" Width="600">
+                 ScrollViewer.HorizontalScrollBarVisibility="Disabled" HorizontalContentAlignment="Stretch">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <Border BorderThickness="5" BorderBrush="{Binding Amount, Converter={StaticResource LowStockConverter}}" 
