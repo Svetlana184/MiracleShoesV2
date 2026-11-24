@@ -1,17 +1,19 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using MiracleShoesDesktop.Model;
 using MiracleShoesDesktop.Services;
+using MiracleShoesDesktop.View;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows;
-using MiracleShoesDesktop.View;
 
 namespace MiracleShoesDesktop.ViewModel
 {
     public partial class MainViewModel : ObservableObject
     {
         private readonly Window _window;
+        private readonly PostgresContext _context;
 
         [ObservableProperty] private object? _currentView;
         [ObservableProperty] private string _userInfo = string.Empty;
@@ -23,11 +25,12 @@ namespace MiracleShoesDesktop.ViewModel
         public MainViewModel(Window window)
         {
             _window = window;
+            _context = new PostgresContext();
 
             if (Session.IsAuthorized)
             {
                 var u = Session.CurrentUser!;
-                var role = u.IdUserRoleNavigation?.NameUserRole ?? "?";
+                var role =  _context.UserRoles.FirstOrDefault(r => r.IdUserRole == u.IdUserRole)!.NameUserRole ?? "?";
                 UserInfo = $"Вы вошли как: {u.FullName} ({role})";
             }
             else

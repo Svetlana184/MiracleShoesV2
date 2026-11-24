@@ -35,7 +35,6 @@ namespace MiracleShoesDesktop.ViewModel
             }
 
             var user = _context.Users
-                .Include(u => u.IdUserRoleNavigation)
                 .FirstOrDefault(u => u.Login == SelectedLogin);
 
             if (user == null)

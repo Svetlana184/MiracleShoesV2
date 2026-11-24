@@ -23,8 +23,6 @@ namespace MiracleShoesDesktop.View
         public int? SelectedSizeId { get; private set; }
         public int SelectedAmount { get; private set; }
 
-        //public SizeOption? CurrentSize => SizeCombo.SelectedItem as SizeOption;
-
         private readonly List<SizeOption> _sizes;
 
         public SelectSizeWindow(string productName, List<SizeOption> sizes)
